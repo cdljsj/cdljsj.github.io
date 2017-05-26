@@ -1,7 +1,60 @@
 <!DOCTYPE html>
-<html>
+<head>
+<meta charset="UTF-8"> 
+<script src="https://cdn.bootcss.com/jquery/3.2.1/jquery.js"></script>
+<script>
+$(document).ready(function(){
+	$("#selectedImage").change(function(e) {
+
+		var URL = window.URL;
+		var url = URL.createObjectURL(e.target.files[0]);
+		var img  = new Image();
+		img.src = url;
+
+		img.onload = function() {
+			var canvas = document.getElementById("myCanvas");
+			canvas.width = canvas.width;
+			var ctx = canvas.getContext("2d");
+			var imgSize = calculateAspectRatioFit(img.width, img.height, canvas.clientWidth, canvas.clientHeight);
+			
+            
+			ctx.globalAlpha = 1.0;
+			ctx.clearRect(0, 0, canvas.width, canvas.height);
+			ctx.drawImage(img, 0, 0, imgSize.width, imgSize.height);
+			ctx.font = "30px Arial";
+			ctx.fillStyle = 'red';
+			ctx.globalAlpha = 0.4;
+			ctx.rotate(20*Math.PI/180);
+			ctx.fillText("QiBo 版权所有", 100, imgSize.height/2);
+			
+			//console.log(canvas.toDataURL());
+			downloadCanvas(canvas);
+		}
+	});
+
+	function downloadCanvas(canvas) {
+		var a = document.createElement('a');
+		a.href = canvas.toDataURL('image/png');
+		a.download = "imageWithFont";
+		a.click();
+	}
+	function calculateAspectRatioFit(srcWidth, srcHeight, maxWidth, maxHeight) {
+		var ratio = Math.min(maxWidth / srcWidth, maxHeight / srcHeight);
+		var rtnWidth = srcWidth * ratio;
+		var rtnHeight = srcHeight * ratio;
+		return {
+			width: rtnWidth,
+			height: rtnHeight
+		};
+	}
+})
+</script>
 <body>
-<h1>Hello World</h1>
-<p>I'm hosted with GitHub Pages.</p>
+<div>
+<form>
+<input type="file" accept="image/*" id="selectedImage" />
+</form>
+<canvas id="myCanvas" width="500" height="500"> </canvas>
+</div>
 </body>
 </html>
